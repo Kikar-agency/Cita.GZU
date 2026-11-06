@@ -1,0 +1,127 @@
+        </div>
+      </div>
+
+      <!-- TAB 2: PRIMERA VEZ -->
+      <div id="tab-primera" class="panel">
+        <div class="steps">
+          <div class="step-item">
+            <div class="step-num">1</div>
+            <div class="step-body">
+              <h3>Abrí tu banco o billetera</h3>
+              <p>Podés usar Mercado Pago, tu banco u otra billetera.</p>
+            </div>
+          </div>
+          <div class="step-item">
+            <div class="step-num">2</div>
+            <div class="step-body">
+              <h3>Nueva transferencia → Alias</h3>
+              <p>Buscá la opción para transferir por alias o CVU.</p>
+            </div>
+          </div>
+          <div class="step-item">
+            <div class="step-num">3</div>
+            <div class="step-body">
+              <h3>Escribí el alias</h3>
+              <p>Copiá el alias <code>cita.gnz</code>, pegalo y buscá.</p>
+            </div>
+          </div>
+          <div class="step-item">
+            <div class="step-num">4</div>
+            <div class="step-body">
+              <h3>Verificá el titular</h3>
+              <p>Tiene que aparecer <strong>Joaquin Ezequiel Alonso</strong> · Mercado Pago. Revisá que coincida antes de continuar.</p>
+            </div>
+          </div>
+          <div class="step-item">
+            <div class="step-num">5</div>
+            <div class="step-body">
+              <h3>Ingresá el monto y enviá</h3>
+              <p>La próxima vez lo vas a tener en tus recientes. No necesitás volver a buscar el alias.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 3: DATOS COMPLETOS -->
+      <div id="tab-datos" class="panel">
+        <div class="datos">
+          <div class="dato-row">
+            <span class="dato-k">Alias</span>
+            <span class="dato-v">cita.gnz</span>
+          </div>
+          <div class="dato-row">
+            <span class="dato-k">Titular</span>
+            <span class="dato-v">Joaquin Ezequiel Alonso</span>
+          </div>
+          
+          <div class="dato-row">
+            <span class="dato-k">Billetera</span>
+            <span class="dato-v">Mercado Pago</span>
+          </div>
+          
+          
+          <div class="dato-row">
+            <span class="dato-k">CVU</span>
+            <span class="dato-v">0000003100021701302091</span>
+          </div>
+        </div>
+        <button class="btn-full" id="copyCvu" onclick="copy('0000003100021701302091', 'copyCvu', 'CVU copiado')">
+          Copiar CVU
+        </button>
+      </div>
+
+
+    </div>
+
+    <p id="copyStatus" role="status" aria-live="polite" style="padding:0 1.5rem;font-size:.78rem;line-height:1.55;overflow-wrap:anywhere"></p>
+    <div class="footer">
+      <p>
+        <strong>Iglesia Cita con la Vida · Guiñazú</strong><br>
+        Tu ofrenda hace la diferencia
+      </p>
+    </div>
+
+  </div>
+
+  <script>
+    function switchTab(id, btn) {
+      document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.getElementById('tab-' + id).classList.add('active');
+      btn.classList.add('active');
+    }
+
+    const timers = new Map();
+    async function copy(text, btnId, label) {
+      const btn = document.getElementById(btnId);
+      const status = document.getElementById('copyStatus');
+      let copied = false;
+      try {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(text); copied = true;
+        }
+      } catch (_) {}
+      if (!copied) {
+        const field = document.createElement('textarea');
+        field.value = text; field.setAttribute('readonly', '');
+        field.style.cssText = 'position:fixed;left:0;top:0;opacity:0;font-size:16px';
+        document.body.appendChild(field);
+        field.focus(); field.select(); field.setSelectionRange(0, text.length);
+        try { copied = document.execCommand('copy'); } catch (_) {}
+        field.remove(); btn.focus();
+      }
+      if (!copied) {
+        status.textContent = 'No se pudo copiar automáticamente. Seleccioná este dato para copiarlo: ' + text;
+        return;
+      }
+      if (!btn.dataset.original) btn.dataset.original = btn.textContent.trim();
+      clearTimeout(timers.get(btnId));
+      btn.textContent = label; btn.classList.add('ok');
+      status.textContent = label + ': ' + text;
+      timers.set(btnId, setTimeout(() => {
+        btn.textContent = btn.dataset.original; btn.classList.remove('ok');
+      }, 2200));
+    }
+  </script>
+</body>
+</html>
